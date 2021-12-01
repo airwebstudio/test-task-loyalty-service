@@ -21,9 +21,30 @@ class LoyaltyAccount extends Model
         'active',
     ];
 
+    public static function getByParams($type, $id) {
+        return self::where($type, '=', $id)->first();
+    }
+
+
     public function getBalance(): float
     {
         return LoyaltyPointsTransaction::where('canceled', '=', 0)->where('account_id', '=', $this->id)->sum('points_amount');
+    }
+
+    public function activate() {
+        if (!$this->active) {
+            $this->active = true;
+            $this->save();
+            $this->notify('Account restored');
+        }
+    }
+
+    public function deactivate() {
+        if ($this->active) {
+            $this->active = false;
+            $this->save();
+            $this->notify('Account banned');
+        }
     }
 
     public function notify()
