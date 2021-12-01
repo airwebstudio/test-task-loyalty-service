@@ -18,7 +18,13 @@ class LoyaltyPointsTransaction extends Model
         'payment_time',
     ];
 
-    public static function performPaymentLoyaltyPoints($account_id, $points_rule, $description, $payment_id, $payment_amount, $payment_time)
+    public function cancel($reason) {
+        $this->canceled = time();
+        $this->cancellation_reason = $reason;
+        $this->save();
+    }
+
+    public static function performPaymentLoyaltyPoints($account_id, ...$data)
     {
         $points_amount = 0;
 
